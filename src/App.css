@@ -1,38 +1,257 @@
-.App {
-  text-align: center;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background: #121213;
+  color: #fff;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.app {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
+  padding: 0 8px;
+  position: relative;
+}
+
+.header {
+  border-bottom: 1px solid #3a3a3c;
+  width: 100%;
+  text-align: center;
+  padding: 12px 0;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.2rem;
+  text-transform: uppercase;
+}
+
+/* Toast */
+.toast-container {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.toast {
+  background: #fff;
+  color: #121213;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  animation: toast-in 0.2s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Board */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 24px;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.row.shake {
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50%, 90% { transform: translateX(-4px); }
+  30%, 70% { transform: translateX(4px); }
+}
+
+/* Tile */
+.tile {
+  width: 62px;
+  height: 62px;
+  border: 2px solid #3a3a3c;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  user-select: none;
 }
 
-.App-link {
-  color: #61dafb;
+.tile.filled {
+  border-color: #565758;
+  animation: pop 0.1s ease;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+/* Flip animation: color changes at midpoint via JS (revealed state) */
+.tile.revealing {
+  animation: flip-in 0.25s ease forwards;
+}
+
+/* Once JS applies the color class mid-flip, play the second half */
+.tile.revealing.correct,
+.tile.revealing.present,
+.tile.revealing.absent {
+  animation: flip-out 0.25s ease forwards;
+}
+
+@keyframes flip-in {
+  0% {
+    transform: rotateX(0deg);
   }
-  to {
-    transform: rotate(360deg);
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+
+@keyframes flip-out {
+  0% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+/* Static color classes (after reveal is done) */
+.tile.correct {
+  background: #538d4e;
+  border-color: #538d4e;
+}
+
+.tile.present {
+  background: #b59f3b;
+  border-color: #b59f3b;
+}
+
+.tile.absent {
+  background: #3a3a3c;
+  border-color: #3a3a3c;
+}
+
+/* Keyboard */
+.keyboard {
+  width: 100%;
+  max-width: 500px;
+  margin-top: auto;
+  padding-bottom: 16px;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.key {
+  height: 58px;
+  min-width: 36px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 4px;
+  background: #818384;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.key:active {
+  opacity: 0.8;
+}
+
+.key.wide {
+  min-width: 65px;
+  font-size: 0.75rem;
+}
+
+.key.correct {
+  background: #538d4e;
+}
+
+.key.present {
+  background: #b59f3b;
+}
+
+.key.absent {
+  background: #3a3a3c;
+}
+
+/* Game over */
+.game-over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.game-over p {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.new-game-btn {
+  padding: 12px 24px;
+  background: #538d4e;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.new-game-btn:hover {
+  background: #6aaf59;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .tile {
+    width: 52px;
+    height: 52px;
+    font-size: 1.6rem;
+  }
+
+  .key {
+    height: 50px;
+    min-width: 28px;
+    font-size: 0.75rem;
+  }
+
+  .key.wide {
+    min-width: 52px;
   }
 }
