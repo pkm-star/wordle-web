@@ -1,30 +1,31 @@
 /* ─── CSS Variables ──────────────────────────────────────────────────────── */
 :root {
-  --color-correct:  #538d4e;
-  --color-present:  #b59f3b;
-  --color-absent:   #3a3a3c;
-  --color-bg:       #121213;
-  --color-text:     #ffffff;
-  --color-border:   #3a3a3c;
-  --color-tile-border-filled: #565758;
-  --color-key-bg:   #818384;
-  --color-modal-bg: #121213;
-  --color-modal-border: #3a3a3c;
+  --color-correct:  #538d4e; /*정답일 떄 색 */
+  --color-present:  #b59f3b;/* 존재할 때 색*/
+  --color-absent:   #3a3a3c;/* 없을 때 색*/
+  --color-bg:       #121213;/* 기본 배경색 검정*/
+  --color-text:     #ffffff;/* 글자색 흰색*/
+  --color-border:   #3a3a3c;/* 테두리 회색*/
+  --color-tile-border-filled: #565758;/*글자가 입력됐을 때 타일 테두리 조금 밝은회색 */
+  --color-key-bg:   #818384;/*키보드 키의 기본 배경색 */
+  --color-modal-bg: #121213;/* 모달 배경색*/
+  --color-modal-border: #3a3a3c;/* 모달 테두리색*/
 }
-
+/* :root는 페이지 전체를 가리키고, 변수명과 색상을 정의*/
 /* Color Blind Mode (high contrast) */
 [data-color-blind="1"] {
   --color-correct: #f5793a;
   --color-present: #85c0f9;
 }
-
+/* 1 속성이 있을 때만 적용 초록을 주황, 노랑을 파랑*/
 /* ─── Reset ──────────────────────────────────────────────────────────────── */
 *, *::before, *::after {
-  box-sizing: border-box;
+  box-sizing: border-box;/* 테두리와 여백을 포함해 계산 안쪽포함*/
   margin: 0;
   padding: 0;
 }
-
+/* *은 페이지의 모든 요소 HTML에서 만들어 놓은 것에 CSS에 꾸밈을 적용하는 것이고,
+befor,after은 CSS에서 이것을 만들고 적용하기 위해 추가정의이다. html이 안들어졌기 때문*/
 body {
   background: var(--color-bg);
   color: var(--color-text);
@@ -33,18 +34,21 @@ body {
   -webkit-touch-callout: none;
   overflow-y: auto;
 }
-
+/* 배경은 처음 정의한 배경색, 글자색도 처음 정의한 것, font-family 글꼴 우선순위 정의,
+모바일에서 클릭할 때 색을 제거, 길게 눌렀을 때 나타나는 메뉴(복사,붙여넣기 등) 제거,
+overflow-y운 내용이 넘칠 때 세로(y축) 스크롤을 자동생성*/
 /* ─── Layout ─────────────────────────────────────────────────────────────── */
 :root {
   --tile-size: 62px;
   --key-height: 58px;
   --game-gap: 15px;
 }
-
+/* 기본 레이어아웃  타일 크기, 키보드의 키 높이, 게임판과 키보드 사이 간격*/
 @media (max-height: 700px) {
   :root { --tile-size: 59px; --key-height: 50px; --game-gap: 10px; }
 }
-
+/* @media 화면 크기 조건에 따라 스타일 적용. 모바일 뿐 아니라 다른 곳에서 적용.
+위에는 화면 높이가 700px 이하일 때, 아래는 620 이하일 때*/
 @media (max-height: 620px) {
   :root { --tile-size: 51px; --key-height: 44px; --game-gap: 6px; }
 }
@@ -55,7 +59,7 @@ body {
 
 /* 모바일: 높이가 있는 폰에서는 타일 크게 (height 규칙보다 뒤에 위치해야 override됨) */
 @media (max-width: 500px) and (min-height: 600px) {
-  :root { --tile-size: 74px; --key-height: 60px; }
+  :root { --tile-size: 62px; --key-height: 60px; }
 }
 
 .app {
@@ -70,7 +74,16 @@ body {
   background: var(--color-bg);
   z-index: 1;
 }
-
+/* display: flex 내가 요소들을 유연하게 배치, 요소들의 방향을 column 세로 방향으로
+ dvh(dynamic viewport height)는 모바일 브라우저 주소창 포함한 화면 전체 높이, 
+ svh는 주소창 제외한 높이, dvh,svh를 두개 다
+ 쓰는 이유는 브라우저 호환성 때문에 지원하는 걸로 덮어씀, vh는 현재화면높이,
+ env()는 기기 환경 변수를 CSS에서 읽어오는 함수 즉 기기가 알려주는 것이다.
+ safe-area-inset-bottom 하단 홈 바 크기 bottom에 top,left,right가 들어간다.
+ 아이폰처럼 노치나 홈 바가 있는 기기에 콘텐츠가 가려지지 않도록 여백을 자동 부여.
+ 즉 일반 기기면 14px, 아이폰은 약 34px 아래에 여백을 갖음
+ sticky 끈적이는 것 붙어있는 것 이고, top: 0을 통해 헤더에 고정. 항상 헤더가 보이게.
+ 배경은 검정 z-index는 숫자가 클수록 다른 요소과 겹칠 때 보다 위에 있는 것이다.*/
 .game {
   flex: 1;
   display: flex;
@@ -82,7 +95,11 @@ body {
   overflow: hidden;
   width: 100%;
 }
-
+/* flex:1 은 헤더를 데외한 남은 공간 전부 차지, 세로방향으로 정렬, align-items는 가로 중앙 정렬
+justify-content는 세로 중앙 정렬. 우리가 세로로 나열했기에 justify 주측 정렬를 의미하여 세로,
+align는 교차축 정렬이기에 가로 정렬이다. gap 간격은 board와 keyboard 사이 간격 15px,
+padding 위 오 하 왼 3개일 때는 상 좌우 하. overflow:hidden 애니메이션(뒤집기,흔들기...) 중
+타일이 영역 밖으로 나간ㄴ 것을 방지*/
 .board-container {
   position: relative;
   display: flex;
@@ -91,33 +108,37 @@ body {
   margin-top: -150px;
   margin-bottom: 50px;
 }
-
+/*position은 요소를 원래 자리 기준으로 위치 조정. static 기본값, relative 원래 자리 기준으로
+이동 가능(부모,기준점됨), 기본인 가로정렬이며 센터 배치 위에와 150px 띄우고 바닥과 50 띄움ㅂ
+ */
 /* ─── Header ─────────────────────────────────────────────────────────────── */
 .header {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 40px;
+  height: 47px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid var(--color-border);
   padding: 0.3px 5px 0;
   flex-shrink: 0;
   width: 100%;
 }
-
+/* 내부 절대 위치 기준, space-between은 자식들을 양 끝에 배치(왼,오),  헤더 높이 47px,
+테두리 1px두께 직선 투명한, var(색상), flex-shrink:0은 화면이 작아져고 헤더가 줄어들지 않는다.
+공간이 부족해도 이 요소는 줄어들지 않음. 1은 1배 맞춰서, 2은 두배 빠르게 줆*/
 .header-left,
 .header-right {
   display: flex;
   align-items: center;
-  gap: 0px;
+  gap: 7px;
   z-index: 1;
 }
-
+/* 좌우 아이콘 그룹, 세로 중앙 배치, 아이콘 간격 7px 겹칠 때 위에 배치 */
 .header-right {
   justify-content: flex-end;
 }
-
+/* 오른쪽 아이콘들은 오른쪽 끝으로 이동*/
 /* 데스크탑: 제목 숨김 (실제 워들과 동일) */
 .header-center {
   display: none;
@@ -132,7 +153,9 @@ body {
   pointer-events: auto;
   
 }
-
+/* 폰트 설정, 글자크기 기본 글자크기 16px이며 rem은 기본 글자크기의 배수이다. 두께(굵기) 700
+letter-spacing은 글자사이 간격으로 기본 글자의 0.2배 간격,  text-transform 글자 형태 변경
+대문자. 클릭 이벤트 적용*/
 .header-hard-badge {
   font-size: 0.9rem;
   font-weight: 700;
@@ -140,7 +163,7 @@ body {
   margin-top: 4px;
   pointer-events: auto;
 }
-
+/* align-self: flex-start 부모 정렬을 무시하고 이 요소만 세로 위 정렬*/
 .header-btn {
   background: none;
   border: none;
@@ -153,25 +176,28 @@ body {
   transform: translateY(-5px);
   
 }
-
+/* 배경, 테두리 제거, 마우스 올리면 손가락 모양, 아이콘 색은 흰색, 중앙배치, 버튼을 y축으로 -5px
+즉 위로 5px만큼 올림 아이콘의 상하좌우 여백 8px*/
 .header-btn[aria-label="Statistics"] {
   padding-left: 4px;
   padding-right: 5px;
 }
-
+/* aria-label="Statistics 특정 버튼만 선택하는 방법, 같은 클래스이지만 각 버튼을 개별적으로
+스타일 조정, */
 .header-btn[aria-label="Statistics"] svg {
   transform: translateX(-1px);
 }
-
+/* 통계 아이콘 조정*/
 .header-btn[aria-label="Hints"] {
   padding-left: 9px;
   padding-right: 9px;
 }
-
+/* 힌트 아이콘 조정*/
 .header-btn:hover {
   background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
-
+/*hover:맴돌다, 서성이다. 마우스가 버튼 위로 올라갈 때  회색으로 0.1 거의 투명하게 배경이 나타남*/
 /* ─── Toast ──────────────────────────────────────────────────────────────── */
 .toast-container {
   position: absolute;
@@ -186,7 +212,11 @@ body {
   gap: 8px;
   padding-bottom: 0;
 }
-
+/* 토스트를 감싸는 컨테이너로, absolute는 부모를 기준으로 위치를 지정한다. bottom: 100%는
+부모위 위치에 바로 위로 올라가 위치, 부모의 왼쪽에서 50% 지점에 위치. transform: translateX(-50%)
+자신의 너비의 50%만큼 왼쪽이동 따라서 중앙배치, z-index:9999로 젤 위에 배치
+마우스 이벤트는 없어 토스트가 있어도 게임 진행 가능, 여러개가 뜨면 위쪽으로 쌓이고 8px만큼의 간격
+padding-bottom: 0 토스트와 게임의 간격을 없앰*/
 .toast {
   background: var(--color-text);
   color: var(--color-bg);
@@ -197,47 +227,51 @@ body {
   white-space: pre-line;
   text-align: center;
 }
-
+/* 실제 토스트가 보이는 곳으로, 배경색을 글자색 흰색으로, 기본색(글자색)을 검정으로, 위아래 12px여백
+좌우 16px여백, 4px만큼 모서리가 둥근, 글자크기 0.875rem,white-space는 텍스트의 줄바꿈 처리 
+방식 설정하는 속성 pre-line은 실제로 줄바꿈을 함, 공백이면 한줄로 합침, 텍스트 다운데 정렬*/
 .toast-show {
   animation: toast-in 0.2s ease forwards;
 }
-
+/* toast-show가 붙으면 toast-in 0.2초 동안 애니메이션 실행, ease: 처음엔 빠르게, 끝엔 천천히
+forwards는 애니메이션 끝난 후 마지막 상태 유지*/
 .toast-hide {
   animation: toast-out 0.2s ease forwards;
 }
-
+/* toast-out 애니메이션 종료*/
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
+/* from: 시작, 투명하고 8px위에 있음, to: 끝, 완전히 보이고 제자리. 위에서 내려오며 나타나는 효과
+-8에서 0이고 x축이기 때문에 opacity는 0에서 1로 가는 것 중간에 소수점으로 조정*/
 @keyframes toast-out {
   from { opacity: 1; }
   to   { opacity: 0; }
 }
-
+/* 완전 보이다가 서서히 투명해짐*/
 /* ─── Board ──────────────────────────────────────────────────────────────── */
 .board {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
-
+/* 보드를 세로로 6줄로 쌓음, 각 칸의 간격을 5px*/
 .row {
   display: flex;
   gap: 5px;
 }
-
+/* 기본배치 가로 간격 5px, 즉 컬럼 각 6줄에서 각 줄의 타일의 간격*/
 .row.shake {
   animation: shake 0.3s ease;
 }
-
+/* 줄 흔들기,*/
 @keyframes shake {
   0%,100% { transform: translateX(0); }
   10%,50%,90% { transform: translateX(-4px); }
   30%,70% { transform: translateX(4px); }
 }
-
+/* 처음과 끝의 위치는 0, 10,50,90 일 때 왼쪽 4px만큼, 30,70일 때 오른쪽 4px 좌우 흔들기*/
 /* ─── Tile ───────────────────────────────────────────────────────────────── */
 .tile {
   width: var(--tile-size);
@@ -252,29 +286,32 @@ body {
   user-select: none;
   transition: border-color 0.05s;
 }
-
+/* 폭 루트에서 선언한 타일 사이즈, 높아 루트에서 선언한 타일 사이즈 정사각형, 테두리 2px 직선 회색,
+기본 가로 정렬, 가로 세로 센터 배치, 글자 크기 타일 크기의 0.52배, 두께 700 대문자 변경,
+user-select:none 텍스트 드래그 선택 불가, auto 드래그 가능... , 테두리 색이 바뀔 때 0.05초
+동안 서서히 바뀜 */
 .tile.filled {
   border-color: var(--color-tile-border-filled);
   animation: pop 0.1s ease;
 }
-
+/* 글자 입력시 테두리의 색이 바뀜, 0.1초 동안 글자가 서서히 커졌다 작아짐*/
 @keyframes pop {
   0%   { transform: scale(1); }
   50%  { transform: scale(1.12); }
   100% { transform: scale(1); }
-}
+}/* 중간 시간에 12% 커짐*/
 
 /* Flip animation */
 .tile.revealing {
   animation: flip-in 0.25s ease forwards;
 }
-
+/* 제출 시 뒤집기,  앞면이 90도로 천천히 forwards는 동작이 끝나고 그 상태 유지*/
 .tile.revealing.correct,
 .tile.revealing.present,
 .tile.revealing.absent {
   animation: flip-out 0.25s ease forwards;
 }
-
+/* 90도에서 색을 씌우고 뒷면으로 돈다.*/
 @keyframes flip-in {
   0%   { transform: rotateX(0deg); }
   100% { transform: rotateX(90deg); }
@@ -284,12 +321,12 @@ body {
   0%   { transform: rotateX(90deg); }
   100% { transform: rotateX(0deg); }
 }
-
+/* 90도 돌고 다시 처음으로*/
 /* Win bounce */
 .tile.bouncing {
   animation: bounce 1s ease forwards;
 }
-
+/* */
 @keyframes bounce {
   0%, 20%  { transform: translateY(0); }
   40%      { transform: translateY(-28px); }
@@ -298,26 +335,26 @@ body {
   80%      { transform: translateY(2px); }
   100%     { transform: translateY(0); }
 }
-
+/* 정답 시 통통 튀기 위로 28, 0기준 아래로 4, 0 기준 위로 14, 아래로 2 바운스가 점점 작게*/
 /* Tile colors */
 .tile.correct {
   background: var(--color-correct);
   border-color: var(--color-correct);
   color: #fff;
 }
-
+/* 타일 색 초록색으로*/
 .tile.present {
   background: var(--color-present);
   border-color: var(--color-present);
   color: #fff;
 }
-
+/* 타일 색 노란색으로*/
 .tile.absent {
   background: var(--color-absent);
   border-color: var(--color-absent);
   color: #fff;
 }
-
+/* 타일 색 검정으로*/
 /* ─── Keyboard ───────────────────────────────────────────────────────────── */
 .keyboard {
   width: 100%;
@@ -325,18 +362,19 @@ body {
   padding: 0 8px;
   margin-top: -11px;
 }
-
+/* 키보드 컨테이너, 가로 전체 너비 차지, 최개 너비 500px로 데스크탑에서 너무 넓어지는 것을 방지,
+좌우 여백 8px 화면 끝에 딱 붙는 것을 방지, 키보드를 위로 11px당김, 게임판과의 간격 조정*/
 .keyboard-row {
   display: flex;
   justify-content: center;
   gap: 6px;
   margin-bottom: 8px;
 }
-
+/* 키보드 한 줄, 가로 중앙 정렬, 키와 키 간격 6px, 줄과 줄 사이 간격 8px*/
 .key-spacer {
   flex: 0.5;
 }
-
+/* 양쪽에 0.5px 만큼 여백을 준다. 그래서 자연스럽게 센터배치. 글자수가 적은 줄과 자연스럽개 배정 */
 .key {
   height: var(--key-height);
   padding: 0;
@@ -357,20 +395,26 @@ body {
   flex: 1;
   transition: background-color 0.1s;
 }
-
+/* 키보드 버튼 하나의 스타일(각 키박스와 키), 키 높이 58px, 안쪽 여백 설정 x 대신 height과 flex로 조정
+테두리 없음, 테두리 4px만큼 둥긂, 글자 색과 배경색 지정, 폰트는 inherit, 글자 크기는 기본에 1.2배
+글자 굵기 bold(700) 굵게 normal(400), 대문자 표시, 마어수 커서 올리면 손가락 모양, 드래그로 글자 선택 안됨
+touch-action: manipulation 모바일에서 더블탭 줌 방지. 버튼을 빠르게 눌러도 줌 안됨, 스크롤,펀치줌 허용
+touch-action은 터지 동작 처리 방식, auto 모든 터치 동작 허용, none 모든 터치 동작 막음
+flex:1은 모든 키가 균등하게 너비를 나누며, 줄에 키가 많으면 작아지고 적으면 커짐,
+배경색이 바뀔 때 마다 붇럽게 전환 */
 .key:active {
   filter: brightness(0.9);
 }
-
+/*키를 누르면 발기가 살짝 어두워짐 90% 밝기 */
 .key.wide {
   flex: 1.5;
   font-size: 0.75rem;
 }
-
+/* 백스페이스와 ENTER은 1.5배의 너비를 갖음, 글자가 기니까 글자 크기를 줄임*/
 .key.correct { background: var(--color-correct); }
 .key.present { background: var(--color-present); }
 .key.absent  { background: var(--color-absent);  }
-
+/*키의 색 변경*/
 /* ─── Modal Base ─────────────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
@@ -382,7 +426,11 @@ body {
   z-index: 500;
   padding-top: 60px;
 }
-
+/* 화면 전체를 첩는 팝업창으로 통계,도움말,설정 모달이 이 스타일을 공유, 위치는 고정 스트롤 해도 고정됨
+inset은 top: 0; right: 0; bottom: 0; left: 0 의 줄임말 0만큼 떨어짐, 즉 화면을 꽉 채워라
+배경색 검은색, 투명도가 50% 뒤에 살짝 비침, 가로 중앙, 세로로 위쪽 배치, z-index 500, 1보다 높으므로
+게임판 위에 표시, 모달 화면이 위에 딱 붙지 않게 60px 여백
+*/
 .modal {
   background: var(--color-modal-bg);
   border: 1px solid var(--color-modal-border);
@@ -394,12 +442,15 @@ body {
   margin: 0 12px;
   animation: modal-in 0.15s ease;
 }
-
+/* 실제 팝업창, 배경은 검정, 테두리 1px 회색 선, 모서리 px만큼 둥글게, 폭 100%로 가득 채우기,
+최대 폭은 480px,dvh는 주소창을 포함하여 계산 주소창에 따라 크기 조절 최대 높이는 화면 높이에서
+80px를 뺀 값이 최대 높이 화면 밖을 나가지 않게, 내용이 넘치면 overflow-y로 세로 스크롤 가능하게
+좌우 여백 12px, 모달이 화면 끝에 붙지 않게, 0.15초 동안 동작*/
 @keyframes modal-in {
   from { opacity: 0; transform: translateY(-10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-
+/* 모달이 위해서 아래로 살짝 내려오면서 나타나게 함*/
 .modal-header {
   display: flex;
   align-items: center;
@@ -408,14 +459,15 @@ body {
   padding: 16px;
   border-bottom: 1px solid var(--color-modal-border);
 }
-
+/*제목과 X 버튼이 있는 모달의 상단 부분, 제목은 가운데 배치, relative 위치의 기준점이 되어 아래 X가
+absolute로 부모 기준으로 자리 잡음 그래서 X가 헤더의 고정, 사방의 16px안쪽 여백, 아래에 구분선*/
 .modal-header h2 {
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.2rem;
   text-align: center;
 }
-
+/* 제목 스타일 알파벳 간의 간격 0.2rem wnddkd qocl*/
 .modal-close {
   position: absolute;
   right: 12px;
@@ -430,11 +482,15 @@ body {
   padding: 4px;
   border-radius: 4px;
 }
-
+/* 오른쪽 상단의 X버튼 헤더의 오른쪽 끝. 오른쪽 끝에서 12px만큼 떨어지고,거기서 위의 중앙선쪽 배치 50%
+헤더 안에서만 일어나는 일. 50%하면 X의 제일 위가 50%아래에 붙기 때문에 중앙 배치를 위해 X를 위로 반만큼
+올려주어 센터 배치치, 테두리 없고, 마우스 올리면 손가락 모양, 상하좌우 여백 4, 테두리가 살짝 둥글게
+마우스를 올리면 회색으로 덮어지는 것.
+ */
 .modal-close:hover {
   background: rgba(255, 255, 255, 0.1);
 }
-
+/*마우스 커서를 올리면 배경색이 회색으로 바뀜*/ 
 .modal-body {
   padding: 16px;
   display: flex;
@@ -443,31 +499,34 @@ body {
   font-size: 0.875rem;
   line-height: 1.6;
 }
-
+/* 본문 영역, 16px만큼 여유,세로로 쌓고, 줄 간 간격이 12px, 글자크기  14px, 줄 크기 1.6*/
 .modal-body p {
   text-align: center;
 }
-
+/* 모달 아네 p태그 가운데 정렬, paragraph 문단을 나타내는 태그*/
 .modal-body ul {
   padding-left: 20px;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
-
+/* UI 목록을 왼쪽으로 20px 들여써서 기본 불릿 기호가 잘리지 않게 함, 항목을 세로로 쌓고, 각 간격을
+4px 간격 */
 .modal-body li {
   text-align: left;
 }
-
+/* li항목을 왼쪽 정렬 일기 편하게, ui(unordered List)는 순서 없는 목록, 불릿으로 표시
+oi(ordered List)는 순서 있는 목록, 숫자 표기이다. li(list item) 각 목록을 적는 것 한줄 한줄을 
+의미함*/
 /* ─── Help Modal ─────────────────────────────────────────────────────────── */
 .help-modal {
   position: relative;
 }
-
+/* X버튼을 절대 위치로 배치하ㅣ 위한 기준점 설정*/
 .help-modal-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 24px;
+  right: 4px;
   background: none;
   border: none;
   cursor: pointer;
@@ -478,7 +537,8 @@ body {
   border-radius: 4px;
   z-index: 1;
 }
-
+/* 도움말 모달의 X 버튼, 모달 오른쪽 상단에 고정, 배경,테두리 없음, 마우스 올리면 손가락 모양,
+X아이콘 흰색, 가로지만 세로로 정렬, 주위 4px여백, 테두리 4px둥글게,*/
 .help-modal-close:hover {
   background: rgba(255, 255, 255, 0.1);
 }
@@ -489,19 +549,19 @@ body {
   flex-direction: column;
   gap: 12px;
 }
-
+/* 위 좌우 아래 여백, 칼럼(세로방향으로 나열) 내용들을 세로로 쌓고 12px 간격*/
 .help-title {
   font-size: 1.375rem;
   font-weight: 700;
   text-align: left;
   letter-spacing: 0;
 }
-
+/* 제목, 글자크기 1.375배, 텍스트 왼쪽 정렬, 글자 사이에 간격 없음*/
 .help-subtitle {
   font-size: 1rem;
   text-align: left !important;
 }
-
+/* 부제목, !important는 다른 곳에서 설정한 text-align: left를 무시하고 내부것을 강제로 적용 */
 .help-list {
   padding-left: 20px;
   display: flex;
@@ -509,46 +569,46 @@ body {
   gap: 4px;
   font-size: 1rem;
 }
-
+/* 불릿 기호가 잘리지 않게 20px만큼 띄고, 목록 항목 세로로 쌓고 4px 간격*/
 .help-list li {
   text-align: left;
 }
-
+/* 목록 항목 왼쪽 정렬*/
 .help-divider {
   border: none;
   border-top: 1px solid var(--color-modal-border);
   margin: 4px 0;
 }
-
+/* 설명과 예시 사이 가로 구분선, 선 위아래로 4px여백*/
 .examples-title {
   text-align: left !important;
   font-size: 1rem;
 }
-
+/* Examples 제목을 강제로 왼쪽 정렬*/
 .example-row {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 4px;
 }
-
+/* 타일 + 설명 텍스트를 세로로 쌓고 8px 간격*/
 .example-row p {
   text-align: left !important;
   font-size: 1rem;
 }
-
+/* 예시 설명 텍스트 왼쪽 정렬*/
 .example-tiles {
   display: flex;
   gap: 4px;
 }
-
+/* 타일을 5개로 가로 배치, 4px 가격*/
 .example-tile {
   width: 42px;
   height: 42px;
   font-size: 1.375rem;
   border: 2px solid var(--color-tile-border-filled);
 }
-
+/* 타일의 크기는 가로세로 42px, 폰트는 기본보다 1.375배, 테두리 두깨 2px 회색*/
 .example-tile.correct {
   background: var(--color-correct);
   border-color: var(--color-correct);
@@ -563,13 +623,13 @@ body {
   background: var(--color-absent);
   border-color: var(--color-absent);
 }
-
+/* 정답시 젤 위 초록, 존재시 노랑, 없을 시 회색*/
 .help-footer {
   font-size: 1rem;
   text-align: left !important;
   color: var(--color-text);
 }
-
+/* 도움말 하단 텍스트, 왼쪽 정렬, 흰색*/
 /* ─── Stats Modal ────────────────────────────────────────────────────────── */
 .stats-row {
   display: flex;
@@ -577,48 +637,49 @@ body {
   gap: 8px;
   padding: 4px 0;
 }
-
+/* 통계 숫자들을 한 줄에 나열하는 컨테이너, 가로 중앙 배치, 각 간격이 8px,위 아래 여백 4px*/
 .stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   min-width: 60px;
 }
-
+/* 숫자 + 라벨 한 쌍을 감싸는 컨테이너 숫자와 라벨을 세로로 배치하고, 중앙 정렬, 최소폭 60px*/
 .stat-number {
   font-size: 2rem;
   font-weight: 400;
   line-height: 1;
 }
-
+/* 글자 크기 기본 폰트 2배, 두꼐 400 보통 굵기, 줄 높이를 글자 크기와 동일하게, 위아래 여백 없이 */
 .stat-label {
   font-size: 0.6875rem;
   text-align: center;
   white-space: pre-line;
   margin-top: 4px;
 }
-
+/* 라벨글자 작게, 중앙배치, white-space는 공백과 줄바꿈을 어떻게 처리할지 설정하는 속성으로 normal
+줄바꿈 무시, pre-line \n은 줄바꿈, 공백은 합침,위에와 4px만큼 떨어짐 */
 .distribution-title {
   font-size: 0.875rem;
   font-weight: 700;
   letter-spacing: 0.1rem;
   text-align: center;
 }
-
+/* GUESS DISTRIBUTION 제목 글자 크기, 굵게, 글자간의 간격 16*0.1, 가운데 정렬*/
 .distribution {
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 0 4px;
 }
-
+/* 막대 그래프 줄들을 세로로 설정,각 줄의 간격이 4px, 각 줄의 좌주에 4px만큼 여유를 줌*/
 .dist-row {
   display: flex;
   align-items: center;
   gap: 8px;
   height: 20px;
 }
-
+/* 막대그래프 한 줄 숫자(1~6) + 막대 한 쌍, 가로 배치 세로 중앙정렬, 한 줄의 높이 20px 고정*/
 .dist-label {
   font-size: 0.875rem;
   font-weight: 400;
@@ -626,7 +687,10 @@ body {
   text-align: right;
   flex-shrink: 0;
 }
-
+/* 왼쪽 숫자(1~6), 글자 크기 0.875rem, 굵기 400(보통), 숫자 너비 12px 고정, 오른쪽 정렬,
+flex:shrink 공간이 부족할 때 크기가 작아지는 것, 0 이면 고정, 1이면 작아지는 정도에 따라 작아짐,
+2면 두배 작아짐. 그래프의 숫자 너비는 고정
+*/
 .dist-bar {
   display: flex;
   align-items: center;
@@ -639,11 +703,13 @@ body {
   min-width: 20px;
   transition: width 0.5s ease;
 }
-
+/* 막대 자체, 막대 안의 숫자를 오른쪽 배치, flex-end는 오른쪽 배치, flex-start는 왼쪽 배치,
+숫자가 오른쪽에 딱 붙지 않게 6px 여유, 높이 맞게, 배경 초록색, 글자크기 0.75rem,  최소 20px로
+막대가 아예 안보이지 않게, 막대의 길이가 바뀔 때 0.5초 동안 부드럽게 늘어남*/
 .dist-bar.highlight {
   background: var(--color-correct);
 }
-
+/* 이번 게임에서 맞힌 줄의 막대는 초록색으로 강조*/
 .stats-footer {
   display: flex;
   align-items: center;
@@ -651,34 +717,37 @@ body {
   padding: 8px 0 4px;
   gap: 12px;
 }
-
+/* 위 8px, 아래 4px 여백 항목 사이 12px 간격, 게임이 끝난 후 푸터 나옴,
+NEXT WORDLE 타이머와 SHARE 버튼을 양쪽으로 배치,  space-around: 자식요소들 사이와 양 끝에
+균등한 간격을 준다.*/
 .next-wordle {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
 }
-
+/* NEXT WORDLE 라벨과 타이머를 세로로 쌓고 중앙 정렬*/
 .next-wordle-label {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.05rem;
 }
-
+/* 텍스트 12px, 글자간의 간격 약간 넓게*/
 .next-wordle-timer {
   font-size: 1.75rem;
   font-weight: 400;
   letter-spacing: 0.05rem;
   font-variant-numeric: tabular-nums;
 }
-
+/* font-variant-numeric: 숫자 표기 방식을 설정하는 속성 tabular-nums은 모든 숫자 너비를 동일하게 함
+nomal rlqhsrkqt,*/
 .stats-divider {
   width: 1px;
   height: 60px;
   background: var(--color-modal-border);
   flex-shrink: 0;
 }
-
+/* 타이머와 SHARE 버튼 사이의 새로 구분선, 1px 너비, 높이 60px */
 .share-btn {
   display: flex;
   align-items: center;
@@ -694,17 +763,19 @@ body {
   letter-spacing: 0.05rem;
   cursor: pointer;
 }
-
+/* SHARE 텍스트와 아이콘을 가로 배치, 간격 4px, 배경 초록색, 글자색 흰색, 테두리 없음, 모서리 4px
+만큼 둥긂, 위아래 14px, 좌우 20px, 마우스 올리면 손가락 모양*/
 .share-btn:hover {
   background: #6aaf59;
 }
-
+/* 마우스 올리면 더 밝은 초록색 됨*/
 /* ─── Settings Modal ─────────────────────────────────────────────────────── */
 .settings-modal .modal-body {
   gap: 0;
   padding: 0;
 }
-
+/* 설정 버튼을 누르면 하드모드와, 색약 모드 설정 팝업, 설정 모달에 구분선이 있어, 여백을 없애고 구분선이 대채
+*/
 .setting-row {
   display: flex;
   align-items: center;
@@ -712,44 +783,46 @@ body {
   padding: 16px;
   gap: 16px;
 }
-
+/* 설정 항목 한 줄, space-between은 자식 요소들을 양 끝에 붙이고 사이만 균등하게 벌린다.
+글과 토글이 양 끝 배치, 16px 여백과 설명과 토글 사이의 16px 간격 */
 .feedback-row {
   justify-content: center;
 }
-
+/* fldzm god. rkdnsep wjdfuf*/
 .feedback-link {
   color: #818384;
   font-size: 0.8125rem;
   text-decoration: none;
 }
-
+/* 링크 색 회색, 글자 크기 13px 작게, text-decoration: 텍스트에 선을 추가하는 속성, none 선 없음
+그냥 텍스트만, underline 밑줄 있음 ... */
 .feedback-link:hover {
   text-decoration: underline;
 }
-
+/* 마우스를 올리면 밑에 선이 나타나게 함*/
 .setting-divider {
   border: none;
   border-top: 1px solid var(--color-modal-border);
   margin: 0 16px;
 }
-
+/* 설정 항목 사이 가로 구분선, 좌우 16px 여백*/
 .setting-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-
+/* 제목과 설명을 세로로 쌓고 2px 간격*/
 .setting-title {
   font-size: 0.9375rem;
   font-weight: 700;
 }
-
+/* 설정이름 사이즈 조금 작은 15px, 굵게*/
 .setting-desc {
   font-size: 0.75rem;
   color: #818384;
   max-width: 250px;
 }
-
+/* 설명 부분, 색 회색, 폭 최대 250px로 너무 길면 줄바꿈*/
 /* Toggle Switch */
 .toggle {
   position: relative;
@@ -759,13 +832,17 @@ body {
   flex-shrink: 0;
   cursor: pointer;
 }
-
+/* 설정 모달 오른쪽의 켜고/끄는 스위치, 내부 요소의 절대 위치 기준점, display 요소를 어떻게 배치할지
+설정하는 속성, inline-block은 나란히 배치, 크기 지정 가능, inline 나란히, 크기 지정 불가
+가로 44, 세로 24, flex-shrink:0은 화면이 작아져도 토글 크기 줄어들지 않음, 마우스 올리면 손가락 커서
+*/
 .toggle input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
+/* js 에 toggle에 input에 체크박스가 아닌 토글 모양으로 보여주고 체크박스의 on/off의 기능만
+받아서 쓰는 것 */
 .toggle-slider {
   position: absolute;
   inset: 0;
@@ -773,7 +850,8 @@ body {
   border-radius: 24px;
   transition: background 0.2s;
 }
-
+/* 위치 부모(.toggle)에 크기에 꽉 맞게 배치, inset:0 은 부모안에서 부모 크기에 딱 맞게 배치,
+배경 회색, 타원으로 둥근 모양,배경이 바뀔 때 0.2초 동안 서서히 바뀜 */
 .toggle-slider::before {
   content: '';
   position: absolute;
@@ -785,15 +863,19 @@ body {
   border-radius: 50%;
   transition: transform 0.2s;
 }
-
+/*before은 html 없이 CSS가 만들어서 브라우저가 그려주는 것이다. content='' 빈 요소를 만들고,
+가로세로 폭이 원의 크기가 되고 border-radius:50%는 동글한 원 모양이 된다.
+position: absolute 토글 위에 배치하고, 0.2초 동안 서서히 움직임*/
 .toggle input:checked + .toggle-slider {
   background: var(--color-correct);
 }
-
+/* 체크박스가 체크 되면(켜진상태) 바로 뒤 .toggle-slider 배경을 초록색으로 변경, +는 바뤼 뒤에오는
+형제 요소를 선택하는 CSS 선택자*/
 .toggle input:checked + .toggle-slider::before {
   transform: translateX(20px);
 }
-
+/* 켜진 상태에서 동그라미를 오른쪽으로 20px 이동, 클릭하면 오른쪽으로 슬라이스 되는 기능,
+돌아오는 거는 따로 쓸 필요가 없고 checked가 없으면 기본 상태로 CSS가 알아서 처리 */
 /* ─── Banner ─────────────────────────────────────────────────────────────── */
 .banner {
   display: flex;
@@ -808,7 +890,11 @@ body {
   flex-shrink: 0;
   margin-bottom: 10px;
 }
-
+/* 화면 상단 광고 부분, 베너 전체를 감싸는 컨테이너, <a> 태그로 누르면 구독 페이지 이동,
+내부 요소들을 세로로 쌓음 vw(viewport width) 화면 너비의 %로 나타냄, 배경색 검정, 베너 아래
+흰색 구분선, 위 아래 17px씩 여백, href={BANNER_URL}에서 선을 그어 내보내어
+text-decoration: none;으로 선들을 제거해준다, color: inherit 부모 속성을 물려 받는다.
+마우스 올리면 손가락 모양, 크기 줄지 않고, 베너 아래 10px 간격*/
 .banner-inner {
   display: flex;
   width: calc(100% - 2px);
@@ -817,7 +903,9 @@ body {
   margin: -2px auto 0;
   outline: 1px solid rgba(255, 255, 255, 0.605);
 }
-
+/* 좌중우를 감쌈, 가로배치, 양끝에 1px씩 테두리가 있기에 전체 비율에서 2px만큼 빼줌, 높이 268px,
+오버플로우 허용하지 않아 넘치면 숨김, 위로 2px 만큼 떙겨지고 테두리와 겹침 방지, 좌우 auto로 중앙정렬
+반투명 회색 외곽선*/
 .banner-left {
   flex: 1;
   background: #f7c948;
@@ -826,7 +914,7 @@ body {
   justify-content: center;
   padding: 16px;
 }
-
+/* 왼쪽 배너,flex:1은 남은 공간을 1 비율로 차지하겠다. 배경 주황, 가운데 정렬, 여백 16px */
 .banner-center {
   flex: 1.4;
   background: #fff;
@@ -839,7 +927,8 @@ body {
   text-align: center;
   gap: 4px;
 }
-
+/* 가운데 정렬, 1.4 비중, 배경 흰색, 글자 검은색, 세로방향으로 나열, 가운데 정렬, 상하 16px,
+좌우 20px, 글자 가운데 정렬, 간격 4px*/
 .banner-right {
   flex: 1;
   background: #1a1a1a;
@@ -848,7 +937,7 @@ body {
   justify-content: center;
   padding: 16px;
 }
-
+/* 오른쪽 1비중,  가운데 정렬 16px 여백*/
 .banner-nyt {
   font-family: 'Times New Roman', Georgia, serif;
   font-size: 1rem;
@@ -856,7 +945,8 @@ body {
   color: #000;
   margin-bottom: 4px;
 }
-
+/* NTY 로고용 글돌, Times New Roman이 없으면 다른 것, 기본 사이즈, 기본 굵기, 검은색,
+아래에 4px만큼 여백을 줌*/
 .banner-headline {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 1.35rem;
@@ -864,23 +954,23 @@ body {
   line-height: 1.3;
   color: #000;
 }
-
+/* 배너 메인 문구, 글자 조금 크게, 굵게, 글자 높이 높게*/
 .banner-sub {
   font-size: 0.875rem;
   color: #333;
   margin-top: 4px;
 }
-
+/* 부제목, 아래의 4px 띔*/
 .banner-price {
   font-size: 0.875rem;
   color: #333;
 }
-
+/* 가격, 14px 어두운 회색*/ 
 .banner-blue {
   color: #326891;
   text-decoration: underline;
 }
-
+/* 배너 안의 파란 링크 스타일, NYT 브래드 파라색,*/
 .banner-btn {
   background: #000;
   color: #fff;
@@ -891,19 +981,20 @@ body {
   border-radius: 2px;
   margin-top: 4px;
 }
-
+/* 배너의 버튼 배경 검정, 글자 흰색, 글자 12px, 두꺼움, 글자간의 간격 0.05rem,
+위아래 8px, 좌우 20px 여백, 모서리 살짝 둥글고, 밑에와 4px 간격*/
 .banner-fine {
   font-size: 0.625rem;
   color: #888;
 }
-
+/* 배너 하단 작은 글씨, 10px 크기, 연한 회색 */
 /* 배너 안 타일 */
 .banner-tile-row {
   display: flex;
   gap: 4px;
   margin-bottom: 4px;
 }
-
+/* 배너 안에 타일들을 가로 배치, 타일간 간격 4px, 타음 타일 줄과 간격 4px*/
 .banner-tile {
   width: 36px;
   height: 36px;
@@ -916,40 +1007,44 @@ body {
   color: #fff;
   background: #787c7e;
 }
-
+/* 배너용 작은 타일 가로세로폭 36px, 테두리 선 1px, 센터배치, 0.9rem, 굵고, 흰색*/
 .banner-tile.b-correct { background: #6aaa64; border-color: #6aaa64; }
 .banner-tile.b-absent  { background: #787c7e; border-color: #787c7e; }
-
+/* 밴 왼쪽 노란색에 맞으면 초록, 틀리면 회색으로*/
 .banner-right .banner-tile {
   background: #3a3a3c;
   border-color: #555;
 }
 .banner-right .banner-tile.b-correct { background: #538d4e; border-color: #538d4e; }
-
+/* 오른쪽 배경 어두운 배경의 타일색상, 맞으면 초록, 테두리도 초록*/
 /* 모바일: 배너 숨김 */
 @media (max-width: 600px) {
   .banner { display: none; }
 }
-
+/* 화면 너비 600px 미만 모바일에서는 보여주지 않음*/
 /* ─── Subscribe Button ───────────────────────────────────────────────────── */
 .subscribe-btn {
   display: inline-flex;
   align-items: center;
-  padding: 8px 15px;
+  padding: 13px 15px;
   border: 1px solid var(--color-text);
   border-radius: 24px;
   color: var(--color-text);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: calc(0.87rem + 1px);
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
-  margin-left: 7px;
-  margin-right: 21px;
-  transform: translateY(-5px);
+  margin-left: 4px;
+  margin-right: 27px;
+  transform: translateY(-6px);
   cursor: pointer;
 }
-
+/* display는 요소들을 어떻게 배치할지 정하는 것, inline:나란히 배치 크기 조절 불가, flex 자식을 가로/세로
+자유롭게 배치, 새 줄 차지, inline-flex 자식을 flex로 배치, 나란히 배치, 중앙 배치, 상하 13px, 좌우 15px
+여백, 테두리 1px 두계 24px 모서리 둥글게(pill 모양), 흰색, 글자크기 0.87rem + 1px 약 15px, 조금 굵게,
+밑줄 제거, white-space는 텍스트의 공백과 줄바꿈 처리 방식 nowrap 줄바꿈 없이 한 줄로 유지, 왼찍 4px, 
+오른쪽 27px, 좌우 간격 조정, 6px 위로 올려 헤어 안에서 시각적 중앙 정렬, 마우스 올리면 손가락 커서*/
 .subscribe-btn:hover {
   cursor: pointer;
 }
@@ -966,37 +1061,40 @@ body {
   color: #fff;
   white-space: nowrap;
 }
-
+/* 맨 아래 저작권/링크 영역, 가로 배치, 폭 100%, 줄바꿈 없음, 위 14여백, 좌우 16 여백, 아해 19 여백,
+글자크기 약 11px로 작게, 색 흰색, 줄바꿈 없음, flex-wrap은 flex 자식 요소들이 줄바꿈을 어떻게 할지 설정,
+wrap 공간이 부족하면 다음 줄로 넘어감, nowrap은 기본값으로 한 줄 유지 */ 
 .footer-copy {
   white-space: nowrap;
 }
-
+/* 줄바꿈 없음 */
 .footer-copy::after,
 .footer-link:not(:last-child)::after {
   content: ' | ';
   padding: 0 4px 0 2px;
   color: #fff;
 }
-
+/* 우리가 CSS에서 만듦, 각 항목 뒤에 |를 적는 것, 마지막 요소 뒤에는 적지 않음*/
 .footer-link {
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
 }
-
+/* 링크 흼색, 줄 없음, 한줄, */
 .footer-link:hover {
   cursor: pointer;
 }
-
+ 
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 
-/* mobile-only / desktop-only 토글 */
+/* mobile-only / desktop-only 토글, JS에 없이 화면 크기에 따라 CSS가 자동으로 show/hide한다.
+브라우저가 화면 크기를 감지해서 해당하는 @media 스타일을 적용 */
 .mobile-only { display: none; }
 .desktop-only { display: flex; }
-
+/* 기본(데스크탑)에서 모바일 전용 요소는 숨기고, 데스크탑 전용은 보임*/
 /* 모바일 */
 @media (max-width: 500px) {
-  /* 배너 숨김 */
+  /* 폭이 500px 미만일 때 배너 숨김 */
   .banner { display: none; }
 
   /* 푸터 숨김 */
@@ -1011,28 +1109,33 @@ body {
   /* 게임 레이아웃: 보드 상단, 키보드 하단 */
   .game {
     justify-content: space-between;
-    padding: 12px 0 0;
+    padding: 16px 0 0;
   }
-
+  
   /* 키보드: 남은 공간 전체 차지, 키가 바닥까지 늘어남 */
-  .keyboard { padding: 0 6px 10px; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 8px; }
-  .keyboard-row { gap: 5px; margin-bottom: 0; flex: 1; }
-  .key { font-size: 1.2rem; font-weight: 1000; height: 100%; }
+  .keyboard { margin-top: 5px; padding: 0 6px 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; }
+  .keyboard-row { gap: 4px; margin-bottom: 0; flex: 1; }
+  .key { font-size: 1.2rem; font-weight: 800; height: calc(100% + 0.8px); margin-top: -0.4px; margin-bottom: -0.4px; margin-left: 1px; margin-right: 1px; }
 
   /* 헤더: 모바일에서는 타이틀 숨기고 아이콘만 */
-  .header { padding: 0 8px; justify-content: flex-start; }
+  .app { padding-top: calc(6px + env(safe-area-inset-top)); padding-bottom: 2.5px; }
+  .header { padding: 2px 8px 0 7px; justify-content: flex-start; }
   .header-center { display: none; }
 
   /* 햄버거와 전구 사이 간격 = 다른 아이콘 간격의 3배 */
-  .header-left { gap: 0; margin-right: 12px; }
-  .header-right { gap: 4px; flex: 1; justify-content: flex-start; }
+  .header-left { gap: 0; margin-right: 24px; }
+  .header-right { gap: 4px; flex: 1; justify-content: flex-start; transform: translateX(7px); }
+  .header-btn[aria-label="Hints"] svg { width: 27px !important; height: 27px !important; }
+  .header-btn[aria-label="Hints"] { padding-right: 4px; }
 
   /* 아이콘 크기 */
   .header-btn { padding: 4px; }
   .header-btn svg { width: 26px !important; height: 26px !important; }
+  .header-btn[aria-label="Menu"] svg { width: 22px !important; height: 25px !important; }
+  .header-btn[aria-label="Statistics"] svg { width: 25.8px !important; height: 25.8px !important; }
 
   /* Subscribe 버튼 축소 */
-  .subscribe-btn { padding: 5px 10px; font-size: 0.75rem; margin-left: 4px; }
+  .subscribe-btn { padding: 7px 9px; font-size: 0.85rem; margin-left: 5px; margin-right: 0; }
 
   .mobile-only { display: flex; }
   .desktop-only { display: flex; }

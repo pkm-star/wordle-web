@@ -1,9 +1,9 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+t# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
+.pnp.jsff
 
 # testing
 /coverage
@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+# /은 모든 파일을 안보이게 하는게 아니라 특정 폴더와 그 안에 내용들만 깃허브에
+# 올리지 않겠다. * .pnp는 파일 상관없이 모든 .pnp 파일은 무시한다/
+.vercel

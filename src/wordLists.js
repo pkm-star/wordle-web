@@ -1307,3 +1307,7 @@ export const VALID_GUESSES = [
 
 // Combined set of all valid words (answers + guesses = 12,970 words)
 export const ALL_VALID_WORDS = new Set([...ANSWER_WORDS, ...VALID_GUESSES]);
+/*중복 제거. set이 배열보다 빠르기 대문에 set으로 만들어 사용
+배열을 처음부터 돌지만 set은 해쉬 함수로 단어의 이름을 주소(색인)에 바로 저장
+...을 쓰면 배열의 내용을 다 꺼낸다. set()은 기본적으로 순서가 있는 목록을 
+받기 때문에 [] 하나의 목록으로 묶어줌. ,로 나누어 나타낸다. */
