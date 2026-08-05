@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { ANSWER_WORDS, ALL_VALID_WORDS } from './wordLists';
+import { evaluateGuess, checkHardMode, WIN_MESSAGES } from './gameLogic';
+import { TIMING } from './constants';
 
 // ─── Daily Word System ───────────────────────────────────────────────────────
 // Wordle epoch: June 19, 2021 (Day 0, word: "cigar")
@@ -16,75 +18,9 @@ function getDailyWord() {
   return ANSWER_WORDS[getDayIndex() % ANSWER_WORDS.length];
 }
 //날자%단어수를 해서 나머지1이 되면 처음부터 다시 반복
-// ─── Guess Evaluation ────────────────────────────────────────────────────────
-export function evaluateGuess(guess, answer) {
-  const result = Array(5).fill('absent');
-  const answerChars = answer.split('');
-  const guessChars = guess.split('');
-//5짜리 배열을 회색으로 채우고 알파벳 단위로 나눔
-  for (let i = 0; i < 5; i++) {
-    if (guessChars[i] === answerChars[i]) {
-      result[i] = 'correct';
-      answerChars[i] = null;
-      guessChars[i] = null;
-    }
-  }
-  /*자리가 맞는지 확인 이미 사용한 글자는 지운다.맞을 때 i를 null로 중복글자를
-  잘못체크하는 것을 막기 위해 apple에서 aappl를 했을 때 a가 0번에서 정답인데 1번에서
-  또 노란색으로 바꾸는 것을 막기 위해*/
-  for (let i = 0; i < 5; i++) {
-    if (guessChars[i] === null) continue;
-    const idx = answerChars.indexOf(guessChars[i]);
-    if (idx !== -1) {
-      result[i] = 'present';
-      answerChars[idx] = null;
-    }
-  }
-  /* indexof()는 배열 안에서 찾는 값이 몇 번째 있는지 반환, 없으면 -1 */
-  return result;
-}
 
-// ─── Hard Mode Validation ────────────────────────────────────────────────────
-function checkHardMode(guess, guesses, answer) {
-  const ORDINALS = ['1st', '2nd', '3rd', '4th', '5th'];
-  const mustBeAt = {};
-  const mustContain = [];
-/*하드모드에는 이전에 힌트로 알게 된 글자를 반드시 써야하며 mustBeAt은 이 자리에 반드시
-써야하는 글자 mustContain 반드시 포함해야 할 글자 */
-  for (const prev of guesses) {
-    const evl = evaluateGuess(prev, answer);
-    //guesses 알파벳을 하나씩 꺼내서 평가
-    for (let i = 0; i < 5; i++) {
-      if (evl[i] === 'correct') mustBeAt[i] = prev[i];
-    }
-    for (let i = 0; i < 5; i++) {
-      if (evl[i] === 'present' && !mustContain.includes(prev[i])) {
-        mustContain.push(prev[i]);
-      }
-    }
-  }
-/*!mustContain.includes(prev[i])는 중복방지를 위한 것 추가되어 있지 않을때만 넣어라
- */
-  for (const [pos, letter] of Object.entries(mustBeAt)) {
-    if (guess[Number(pos)] !== letter) {
-      return `${ORDINALS[pos]} letter must be ${letter.toUpperCase()}`;
-    }
-  }
-  /*Object.entries()는 Javascript 내장 메서드로, 객체를 [key, value] 쌍의
-  배열로 변환, key를 항상 문자열로 내보니기에 Number(pos) 숫자로 바꿔줌
-  백틱+${}은 변수를 문자열 안에 끼워넣음*/
-  for (const letter of mustContain) {
-    if (!guess.includes(letter)) {
-      return `Guess must contain ${letter.toUpperCase()}`;
-    }
-  }
-  /*일력한 단어의 알파벳이 mustContain에 없다면 포함해야 한다고 알려줌*/
-  return null;
-}
+// evaluateGuess, checkHardMode, WIN_MESSAGES → gameLogic.js 로 이동
 
-// ─── Win Toast Messages ───────────────────────────────────────────────────────
-const WIN_MESSAGES = ['Genius', 'Magnificent', 'Impressive', 'Splendid', 'Great', 'Phew!'];
-//도전 횟수마다 출력값이 달라짐
 // ─── Persistence Helpers ─────────────────────────────────────────────────────
 function loadStats() {
   try {
@@ -292,17 +228,17 @@ saveGameState에 저장함으로써 브라우저를 닫았다 열어도 진행�
       const msg = WIN_MESSAGES[newGuesses.length - 1] || 'Nice!';
       setTimeout(() => {
         set({ toastMessage: msg });
-        setTimeout(() => set({ showStats: true }), 2000);
-      }, 1600);
+        setTimeout(() => set({ showStats: true }), TIMING.STATS_DELAY);
+      }, TIMING.REVEAL_DONE);
     } else if (lost) {
       setTimeout(() => {
         set({ toastMessage: answer.toUpperCase() });
-        setTimeout(() => set({ showStats: true }), 2000);
-      }, 1600);
+        setTimeout(() => set({ showStats: true }), TIMING.STATS_DELAY);
+      }, TIMING.REVEAL_DONE);
     }
   },
-/*승리시 msg에 맞추기 전 실행 횟수에 따라 출력값 변경. 1600은 1.6초로 타일이 다 뒤집힌 후에 실행되고 약 2초동안 실행
- 패배시 토스트 창에 소문자로된 정답을 보여준다. 시간은 승리시와 똑같다.*/
+/*승리시 msg에 맞추기 전 실행 횟수에 따라 출력값 변경. TIMING.REVEAL_DONE(1.6초)로 타일이 다 뒤집힌 후에 실행되고
+TIMING.STATS_DELAY(2초)동안 실행. 패배시 토스트 창에 소문자로된 정답을 보여준다. 시간은 승리시와 똑같다.*/
   clearShake: () => set({ shakeRow: false }),
   clearToast: () => set({ toastMessage: '' }),
 // 흔들기 애니메이션 끄기, 토스트창 지우기
@@ -311,7 +247,7 @@ saveGameState에 저장함으로써 브라우저를 닫았다 열어도 진행�
     set({ isRevealing: false });
     if (gameStatus === 'won') {
       set({ bounceRow: true });
-      setTimeout(() => set({ bounceRow: false }), 1500);
+      setTimeout(() => set({ bounceRow: false }), TIMING.BOUNCE_DURATION);
     }
   },
 /*타일을 다 뒤집고, 이겼으면 타일 튀어오르기, 1.5초 후 튀어오르기 끝 */
