@@ -41,7 +41,7 @@ overflow-y운 내용이 넘칠 때 세로(y축) 스크롤을 자동생성*/
 :root {
   --tile-size: 62px;
   --key-height: 58px;
-  --game-gap: 15px;
+  --game-gap: 20px;
 }
 /* 기본 레이어아웃  타일 크기, 키보드의 키 높이, 게임판과 키보드 사이 간격*/
 @media (max-height: 700px) {
@@ -105,7 +105,7 @@ padding 위 오 하 왼 3개일 때는 상 좌우 하. overflow:hidden 애니메
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -150px;
+  margin-top: -140px;
   margin-bottom: 50px;
 }
 /*position은 요소를 원래 자리 기준으로 위치 조정. static 기본값, relative 원래 자리 기준으로
@@ -178,6 +178,10 @@ letter-spacing은 글자사이 간격으로 기본 글자의 0.2배 간격,  tex
 }
 /* 배경, 테두리 제거, 마우스 올리면 손가락 모양, 아이콘 색은 흰색, 중앙배치, 버튼을 y축으로 -5px
 즉 위로 5px만큼 올림 아이콘의 상하좌우 여백 8px*/
+.header-btn[aria-label="Menu"] {
+  margin-left: 14px;
+}
+
 .header-btn[aria-label="Statistics"] {
   padding-left: 4px;
   padding-right: 5px;
@@ -254,7 +258,7 @@ forwards는 애니메이션 끝난 후 마지막 상태 유지*/
 .board {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 5.6px;
 }
 /* 보드를 세로로 6줄로 쌓음, 각 칸의 간격을 5px*/
 .row {
@@ -1106,14 +1110,16 @@ wrap 공간이 부족하면 다음 줄로 넘어감, nowrap은 기본값으로 �
     margin-bottom: 0;
   }
 
-  /* 게임 레이아웃: 보드 상단, 키보드 하단 */
+  /* 게임 레이아웃: 보드 상단, 키보드 하단, 위의 .game이 세로 정렬이라 그대로 덮어 쓰는 것
+  요소들을 양 끄에 붙이는 것이다. */
   .game {
     justify-content: space-between;
     padding: 16px 0 0;
   }
-  
+
   /* 키보드: 남은 공간 전체 차지, 키가 바닥까지 늘어남 */
   .keyboard { margin-top: 5px; padding: 0 6px 0; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; }
+  /*justify-content: flex-end felx-end는 키보드가 화면 아래에 붙어서 모바일에 보여지는 것*/
   .keyboard-row { gap: 4px; margin-bottom: 0; flex: 1; }
   .key { font-size: 1.2rem; font-weight: 800; height: calc(100% + 0.8px); margin-top: -0.4px; margin-bottom: -0.4px; margin-left: 1px; margin-right: 1px; }
 
@@ -1121,13 +1127,14 @@ wrap 공간이 부족하면 다음 줄로 넘어감, nowrap은 기본값으로 �
   .app { padding-top: calc(6px + env(safe-area-inset-top)); padding-bottom: 2.5px; }
   .header { padding: 2px 8px 0 7px; justify-content: flex-start; }
   .header-center { display: none; }
-
+/*env(safe-area-inset-top) env()는 기기 환경 변수를 CSS에서 읽어오는 함수, 기기의 상단 노치 크기의
+맞게 조정하는 거 ustify-content: flex-start; 왼쪽에서(젤 앞쪽에서) 시작*/
   /* 햄버거와 전구 사이 간격 = 다른 아이콘 간격의 3배 */
   .header-left { gap: 0; margin-right: 24px; }
   .header-right { gap: 4px; flex: 1; justify-content: flex-start; transform: translateX(7px); }
   .header-btn[aria-label="Hints"] svg { width: 27px !important; height: 27px !important; }
   .header-btn[aria-label="Hints"] { padding-right: 4px; }
-
+/* 아이콘 왼쪽 시작,햄버거와 전구 사이의 간격 강제러 덮어 씀 */
   /* 아이콘 크기 */
   .header-btn { padding: 4px; }
   .header-btn svg { width: 26px !important; height: 26px !important; }
@@ -1152,7 +1159,7 @@ wrap 공간이 부족하면 다음 줄로 넘어감, nowrap은 기본값으로 �
   .keyboard-row { gap: 4px; }
 }
 
-/* 태블릿/중간 화면 */
+/* 태블릿/중간 화면, 푸터 조정 */
 @media (min-width: 601px) and (max-width: 900px) {
   .footer {
     padding: 8px 12px;

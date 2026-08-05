@@ -7,7 +7,7 @@ const EPOCH = new Date(2021, 5, 19);
 
 function getDayIndex() {
   const today = new Date();//이 순간 날짜와 시간 가져옴
-  today.setHours(0, 0, 0, 0);//자정으로 초기화
+  today.setHours(0, 0, 0, 0);//자정으로 초기화 
   return Math.floor((today - EPOCH) / 86400000);
   //floor 소수점을 버린다. (오늘-기준일)/하루를 밀리초로 표현한 값 = 며칠째
 }

@@ -456,8 +456,10 @@ const BANNER_URL = 'https://www.nytimes.com/subscription?campaignId=8WULY&source
 // 베너 누르면 링크
 // ─── SVG Icons ────────────────────────────────────────────────────────────────
 const IconMenu = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="32" fill="currentColor">
-    <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="26" fill="currentColor">
+    <rect x="3" y="6"  width="18" height="2" rx="1" />
+    <rect x="3" y="11" width="18" height="2" rx="1" />
+    <rect x="3" y="16" width="18" height="2" rx="1" />
   </svg>
 );
 const IconStats = () => (
