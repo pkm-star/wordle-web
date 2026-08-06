@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import { ANSWER_WORDS, ALL_VALID_WORDS } from './wordLists';
 import { evaluateGuess, checkHardMode, WIN_MESSAGES } from './gameLogic';
 import { TIMING } from './constants';
+import {
+  initAuth,
+  saveStatsToCloud,
+  loadStatsFromCloud,
+  saveGameStateToCloud,
+  loadGameStateFromCloud,
+} from './firebase';
 
 // ─── Daily Word System ───────────────────────────────────────────────────────
 // Wordle epoch: June 19, 2021 (Day 0, word: "cigar")
@@ -135,6 +142,9 @@ const useGameStore = create((set, get) => ({
   // Stats
   stats: loadStats(),
 
+  // Firebase 익명 사용자 ID (로그인 완료 전까지 null)
+  uid: null,
+
   // Modal visibility
   showHelp: isFirstVisit,
   showStats: false,
@@ -216,10 +226,17 @@ err에 오류 메시지가 담기면 흠들고 중단*/
     if (won || lost) {
       stats = updateStats(stats, won, newGuesses.length, get().dayIndex);
       saveStats(stats);
+      // Firestore에도 저장 (uid가 있을 때만 - 로그인 완료 후)
+      const { uid } = get();
+      if (uid) saveStatsToCloud(uid, stats);
     }
 /*게임이 끝났을 때 이기거나 졌을 때만 통계 업데이트 횟수,승ㅇ리수,연속승리 ... */
     set({ guesses: newGuesses, currentGuess: '', gameStatus: newStatus, isRevealing: true, stats });
-    saveGameState({ guesses: newGuesses, gameStatus: newStatus, dayIndex: get().dayIndex });
+    const gameStateToSave = { guesses: newGuesses, gameStatus: newStatus, dayIndex: get().dayIndex };
+    saveGameState(gameStateToSave);
+    // Firestore에도 게임 상태 저장
+    const { uid } = get();
+    if (uid) saveGameStateToCloud(uid, get().dayIndex, gameStateToSave);
 /*let과 const는 둘다 상수이지만 let은 재할당 할 수 있다는 차이가 있다. set을 활용하여 단어 목록, 입력창 비우기
 게임 상태, 타일 뒤집기, 업데이트 통계를 대 할당.
 saveGameState에 저장함으로써 브라우저를 닫았다 열어도 진행상황이 유지되도록 localStorage에 저장 */
@@ -286,6 +303,44 @@ guess.answer()를 자동으로 붙여 나옴 */
       text += '\n';
     }
     return text.trim();
+  },
+
+  // ─── Firebase 초기화 ────────────────────────────────────────────────────────
+  // 앱 시작 시 App.js에서 한 번 호출. 익명 로그인 → Firestore 데이터 동기화
+  initFirebase: async () => {
+    const uid = await initAuth();
+    // initAuth()는 Promise를 반환하므로 await로 로그인 완료까지 기다림
+    if (!uid) return;
+    set({ uid });
+
+    // 통계 동기화: Firestore 데이터가 더 많으면 덮어씀 (다른 기기에서 플레이한 경우)
+    const remoteStats = await loadStatsFromCloud(uid);
+    if (remoteStats && remoteStats.gamesPlayed > get().stats.gamesPlayed) {
+      saveStats(remoteStats);
+      set({ stats: remoteStats });
+    } else {
+      // 로컬 데이터를 Firestore에 업로드 (첫 로그인 시 백업)
+      const localStats = get().stats;
+      if (localStats.gamesPlayed > 0) saveStatsToCloud(uid, localStats);
+    }
+
+    // 오늘 게임 상태 동기화: Firestore가 더 진행됐으면 덮어씀
+    const currentDayIndex = get().dayIndex;
+    const remoteGame = await loadGameStateFromCloud(uid, currentDayIndex);
+    if (remoteGame && remoteGame.guesses?.length > get().guesses.length) {
+      saveGameState(remoteGame);
+      set({ guesses: remoteGame.guesses, gameStatus: remoteGame.gameStatus });
+    } else {
+      // 로컬 게임 상태를 Firestore에 업로드
+      const localGuesses = get().guesses;
+      if (localGuesses.length > 0) {
+        saveGameStateToCloud(uid, currentDayIndex, {
+          guesses: localGuesses,
+          gameStatus: get().gameStatus,
+          dayIndex: currentDayIndex,
+        });
+      }
+    }
   },
 }));
 /*단어가 있고, 마지막 단어가 정답이라면 몇번만에 맞췄는지 틀리면 X 공유하기 버튼을 누르면 복사되는 것을 만듦

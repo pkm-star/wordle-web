@@ -24,6 +24,11 @@ function App() {
   const setShowStats  = useGameStore(s => s.setShowStats);
   const setShowSettings = useGameStore(s => s.setShowSettings);
 
+  // 앱 시작 시 Firebase 익명 로그인 + Firestore 동기화
+  useEffect(() => {
+    useGameStore.getState().initFirebase();
+  }, []);
+
   // Keyboard input
   useEffect(() => {
     const onKeyDown = e => {
